@@ -1,5 +1,0 @@
-# Runtime dependencies (used by Streamlit Community Cloud and `pip install -r`).
-streamlit>=1.52
-pandas>=2.2
-numpy>=1.26
-scikit-learn>=1.5

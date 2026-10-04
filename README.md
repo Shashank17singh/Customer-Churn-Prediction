@@ -17,7 +17,7 @@
 
 ## Overview
 
-Customer churn is the rate at which customers leave a business. This project trains a feed-forward neural network on 7,043 telecom customers (about 27% churn) and wraps it in a Streamlit app: score a single customer and see what drives the prediction, score a whole CSV, explore the data, and inspect how well the model really performs. The original notebook is kept in `notebooks/` with its label bug fixed (see [What changed from the notebook](#what-changed-from-the-notebook)).
+Customer churn is the rate at which customers leave a business. This project trains a feed-forward neural network on 7,043 telecom customers (about 27% churn) and wraps it in a Streamlit app: score a single customer and see what drives the prediction, score a whole CSV, explore the data, and inspect how well the model really performs.
 
 ---
 
@@ -110,8 +110,6 @@ Customer-Churn-Prediction/
 ├── data/
 │   ├── customer_churn.csv      # 7,043 customers
 │   └── sample_customers.csv    # 200 unlabeled rows for the batch demo
-├── notebooks/
-│   └── customer_churn.ipynb    # Original notebook, label bug fixed, outputs cleared
 ├── tests/
 │   ├── conftest.py
 │   ├── test_data.py            # Cleaning, encoding, label regression, validation
@@ -197,24 +195,6 @@ How to read this:
 
 ---
 
-## What Changed From the Notebook
-
-The original notebook reported 100% accuracy. That result was an error, not a great model:
-
-| Issue in the original notebook                                              | Fix in this project                                                   |
-| --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `replace({'Yes': 1, 'No': 0})` was never assigned, so `Churn` stayed text; `to_numeric(...).fillna(0)` then set **every label to 0** | Labels and Yes/No columns are encoded explicitly; a regression test checks both classes exist |
-| Hard-coded confusion-matrix numbers (862, 229, 137, 179) not from the run   | Metrics are computed from the real predictions                        |
-| Scaler fitted on the full data before the split                             | Scaler lives in the pipeline and is fitted on training data only      |
-| Test set used as validation data for early stopping                         | Early stopping uses an internal validation split                      |
-| Random split on a 27% minority class                                        | Stratified split                                                      |
-| 11 new customers dropped for blank `TotalCharges`                           | Kept, with total charges set to 0 (nothing billed yet)                |
-| TensorFlow / Keras                                                          | Same 26-15-1 ReLU architecture, Adam, batch size 32 via scikit-learn, so the app installs quickly on Streamlit Cloud |
-
-The notebook in `notebooks/` has the label bug fixed and stale outputs cleared; re-run it to get real numbers (it still needs TensorFlow).
-
----
-
 ## Deployment
 
 ### 1. Push to GitHub
@@ -224,7 +204,7 @@ git init
 git add .
 git commit -m "Initial commit: Customer Churn Prediction"
 git branch -M main
-git remote add origin https://github.com/<your-username>/Customer-Churn-Prediction.git
+git remote add origin https://github.com/<shashank17singh>/Customer-Churn-Prediction.git
 git push -u origin main
 ```
 
@@ -271,7 +251,6 @@ Open the repository in a Codespace; `.devcontainer/devcontainer.json` installs t
 | `churn/cli.py`                          | `python -m churn` subcommands: train, evaluate, predict.                                                               |
 | `data/customer_churn.csv`               | 7,043 telecom customers with 19 features and the `Churn` label.                                                        |
 | `data/sample_customers.csv`             | 200 unlabeled customers used as the batch demo and upload template.                                                    |
-| `notebooks/customer_churn.ipynb`        | Original exploration notebook with the label bug fixed and outputs cleared.                                            |
 | `tests/test_data.py`                    | Row counts, label regression, encoding rules and upload validation.                                                    |
 | `tests/test_model.py`                   | ROC-AUC floor, no train/test overlap, scaler fitted on train only, determinism, metric maths, scoring, persistence.     |
 | `tests/test_explain_charts_cli.py`      | Driver ordering and direction, valid chart specs, CLI behaviour.                                                       |
