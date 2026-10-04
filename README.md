@@ -204,7 +204,7 @@ git init
 git add .
 git commit -m "Initial commit: Customer Churn Prediction"
 git branch -M main
-git remote add origin https://github.com/<shashank17singh>/Customer-Churn-Prediction.git
+git remote add origin https://github.com/shashank17singh/Customer-Churn-Prediction.git
 git push -u origin main
 ```
 
@@ -215,7 +215,7 @@ git push -u origin main
 3. Under **Advanced settings** choose Python **3.12**. No secrets are required.
 4. Click **Deploy**. Dependencies install from `requirements.txt` automatically.
 
-- **Dashboard URL:** `https://<your-app-name>.streamlit.app/` *(add yours after deploying)*
+- **Dashboard URL:** `https://customer-telecom-churn.streamlit.app`
 
 ### Alternative: Docker
 
