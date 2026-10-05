@@ -5,7 +5,7 @@ Run locally:   streamlit run app.py
 
 from __future__ import annotations
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import streamlit as st
 
 from churn import APP_NAME, __version__, charts
@@ -86,25 +86,25 @@ def pct_prob(p: float) -> str:
     return "<1%" if p < 0.005 else pct(p)
 
 
-PRESETS = {
+DEFAULTS = dict(
+    gender="Male", senior=0, partner="No", dependents="No", tenure=2, phone="Yes", lines="No",
+    internet="Fiber optic", contract="Month-to-month", paperless="Yes", payment="Electronic check", monthly=85.0,
+    OnlineSecurity="No", OnlineBackup="No", DeviceProtection="No", TechSupport="No", StreamingTV="Yes", StreamingMovies="Yes",
+)
+PRESETS: dict[str, dict[str, object] | None] = {
     "Custom": None,
     "Loyal long-term customer": dict(
         gender="Female", senior=0, partner="Yes", dependents="Yes", tenure=60, phone="Yes", lines="Yes",
         internet="DSL", contract="Two year", paperless="No", payment="Credit card (automatic)", monthly=65.0,
         OnlineSecurity="Yes", OnlineBackup="Yes", DeviceProtection="Yes", TechSupport="Yes", StreamingTV="No", StreamingMovies="No",
     ),
-    "New month-to-month fiber customer": dict(
-        gender="Male", senior=0, partner="No", dependents="No", tenure=2, phone="Yes", lines="No",
-        internet="Fiber optic", contract="Month-to-month", paperless="Yes", payment="Electronic check", monthly=85.0,
-        OnlineSecurity="No", OnlineBackup="No", DeviceProtection="No", TechSupport="No", StreamingTV="Yes", StreamingMovies="Yes",
-    ),
+    "New month-to-month fiber customer": DEFAULTS,
 }
 FORM_KEYS = {
     "gender": "in_gender", "senior": "in_senior", "partner": "in_partner", "dependents": "in_dependents", "tenure": "in_tenure",
     "phone": "in_phone", "lines": "in_lines", "internet": "in_internet", "contract": "in_contract", "paperless": "in_paperless",
     "payment": "in_payment", "monthly": "in_monthly", **{a: f"in_{a}" for a in INTERNET_ADDONS},
 }
-DEFAULTS = PRESETS["New month-to-month fiber customer"]
 
 
 def init_form() -> None:

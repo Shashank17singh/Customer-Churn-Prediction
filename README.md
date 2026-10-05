@@ -125,6 +125,8 @@ Customer-Churn-Prediction/
 ├── .gitignore
 ├── Dockerfile                  # Container image (runs as non-root)
 ├── LICENSE                     # MIT
+├── Makefile                    # Developer commands (install, test, lint)
+├── .pre-commit-config.yaml     # Git hooks for code formatting
 ├── pyproject.toml              # Project metadata and tooling
 └── requirements.txt            # Runtime dependencies
 ```
@@ -163,12 +165,13 @@ python -m churn predict data/sample_customers.csv        # score a CSV -> scored
 
 Your CSV needs the 19 feature columns of the training data (`customerID` is optional, `Churn` is optional and only used to measure accuracy). Use the **Download template** button in the app or `data/sample_customers.csv` as a reference.
 
-### 5. Run Tests
+### 5. Run Tests and Quality Checks
 
 ```bash
-pip install -e ".[dev]"
-ruff check .
-pytest -q
+make install      # Installs the app and all dev dependencies (pytest, ruff, mypy)
+make lint         # Runs Ruff and checks formatting
+make typecheck    # Runs MyPy to verify types
+make test         # Runs the Pytest suite with coverage
 ```
 
 ---
@@ -254,11 +257,13 @@ Open the repository in a Codespace; `.devcontainer/devcontainer.json` installs t
 | `tests/test_data.py`                    | Row counts, label regression, encoding rules and upload validation.                                                    |
 | `tests/test_model.py`                   | ROC-AUC floor, no train/test overlap, scaler fitted on train only, determinism, metric maths, scoring, persistence.     |
 | `tests/test_explain_charts_cli.py`      | Driver ordering and direction, valid chart specs, CLI behaviour.                                                       |
-| `tests/test_notebook.py`                | Ensures the notebook assigns its encoded columns and ships without stale outputs.                                       |
 | `tests/test_app.py`                     | Headless Streamlit scenarios: presets, no-internet customer, threshold, batch scoring, bad uploads, cross-validation.   |
 | `.github/workflows/ci.yml`              | Runs Ruff and Pytest on Python 3.10 and 3.12.                                                                          |
 | `.devcontainer/devcontainer.json`       | Dev container for Codespaces / VS Code: Python 3.12, dependencies, port 8501.                                          |
 | `Dockerfile` / `.dockerignore`          | Slim Python image running Streamlit as a non-root user, with a health check.                                           |
 | `.streamlit/config.toml`                | Headless server, 20 MB upload limit, usage stats off, theme colour.                                                    |
-| `requirements.txt` / `pyproject.toml`   | Runtime dependencies for Streamlit Cloud; project metadata, extras and Ruff/Pytest config.                             |
+| `Makefile`                              | Standardized developer commands.                                                                                       |
+| `.pre-commit-config.yaml`               | Pre-commit hooks for formatting and linting.                                                                           |
+| `CONTRIBUTING.md`                       | Open-source contribution guidelines.                                                                                   |
+| `requirements.txt` / `pyproject.toml`   | Runtime dependencies for Streamlit Cloud; project metadata, extras and Ruff/Pytest/Mypy config.                        |
 | `LICENSE`                               | MIT license.                                                                                                           |

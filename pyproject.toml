@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.11", "pytest-cov>=5.0", "pre-commit>=3.8"]
 
 [project.scripts]
 churn = "churn.cli:main"
@@ -35,3 +35,6 @@ extend-exclude = ["notebooks"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 ignore = ["E741", "B905", "E501"]
+
+[tool.mypy]
+ignore_missing_imports = true

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import altair as alt
 import numpy as np
-import pandas as pd
+import pandas as pd  # type: ignore
+from typing import Any
 
 RED, GREEN, BLUE, GREY = "#dc2626", "#16a34a", "#2563eb", "#9ca3af"
 CHURN_COLORS = alt.Scale(domain=["No", "Yes"], range=[BLUE, RED])
 
 
-def drivers_chart(drivers: pd.DataFrame, top: int = 8) -> alt.Chart:
+def drivers_chart(drivers: pd.DataFrame, top: int = 8) -> Any:
     data = drivers.head(top).copy()
     data["Percentage points"] = data["Effect on churn probability"] * 100
     data["Direction"] = data["Percentage points"].map(lambda v: "Raises risk" if v > 0 else "Lowers risk")
@@ -27,7 +28,7 @@ def drivers_chart(drivers: pd.DataFrame, top: int = 8) -> alt.Chart:
     )
 
 
-def rate_chart(df: pd.DataFrame, column: str) -> alt.Chart:
+def rate_chart(df: pd.DataFrame, column: str) -> Any:
     """Churn rate per category of ``column`` (df must contain a 0/1 ``churned`` column)."""
     data = df.groupby(column, observed=True)["churned"].agg(["mean", "size"]).reset_index()
     data.columns = [column, "Churn rate", "Customers"]
@@ -46,7 +47,7 @@ def _bin_counts(values, edges) -> pd.DataFrame:
     return pd.DataFrame({"start": edges[:-1], "end": edges[1:], "Customers": counts})
 
 
-def hist_chart(df: pd.DataFrame, column: str, bins: int = 30) -> alt.Chart:
+def hist_chart(df: pd.DataFrame, column: str, bins: int = 30) -> Any:
     """Overlaid histograms of ``column`` for churned and retained customers (pre-aggregated)."""
     edges = np.linspace(df[column].min(), df[column].max(), bins + 1)
     parts = []
@@ -68,7 +69,7 @@ def hist_chart(df: pd.DataFrame, column: str, bins: int = 30) -> alt.Chart:
     )
 
 
-def prob_hist(scored: pd.DataFrame, threshold: float) -> alt.Chart:
+def prob_hist(scored: pd.DataFrame, threshold: float) -> Any:
     data = _bin_counts(scored["churn_probability"], np.linspace(0, 1, 21))
     bars = alt.Chart(data).mark_bar(color=BLUE).encode(
         x=alt.X("start:Q", title="Predicted churn probability", scale=alt.Scale(domain=[0, 1]), axis=alt.Axis(format="%")),
@@ -80,7 +81,7 @@ def prob_hist(scored: pd.DataFrame, threshold: float) -> alt.Chart:
     return (bars + rule).properties(height=240)
 
 
-def roc_chart(points: pd.DataFrame, auc: float) -> alt.Chart:
+def roc_chart(points: pd.DataFrame, auc: float) -> Any:
     diagonal = alt.Chart(pd.DataFrame({"x": [0, 1], "y": [0, 1]})).mark_line(color=GREY, strokeDash=[4, 4]).encode(x="x:Q", y="y:Q")
     curve = alt.Chart(points).mark_line(color=BLUE).encode(
         x=alt.X("False positive rate:Q", scale=alt.Scale(domain=[0, 1])),
@@ -89,7 +90,7 @@ def roc_chart(points: pd.DataFrame, auc: float) -> alt.Chart:
     return (diagonal + curve).properties(height=300, title=f"ROC curve (AUC = {auc:.3f})")
 
 
-def threshold_chart(table: pd.DataFrame, current: float) -> alt.Chart:
+def threshold_chart(table: pd.DataFrame, current: float) -> Any:
     long = table.melt("threshold", ["precision", "recall", "f1"], var_name="Metric", value_name="Score")
     lines = alt.Chart(long).mark_line(point=True).encode(
         x=alt.X("threshold:Q", title="Decision threshold"),
@@ -100,7 +101,7 @@ def threshold_chart(table: pd.DataFrame, current: float) -> alt.Chart:
     return (lines + rule).properties(height=300, title="Precision / recall trade-off")
 
 
-def importance_chart(table: pd.DataFrame, top: int = 10) -> alt.Chart:
+def importance_chart(table: pd.DataFrame, top: int = 10) -> Any:
     return (
         alt.Chart(table.head(top))
         .mark_bar(color=BLUE)
@@ -113,7 +114,7 @@ def importance_chart(table: pd.DataFrame, top: int = 10) -> alt.Chart:
     )
 
 
-def confusion_chart(m: dict) -> alt.Chart:
+def confusion_chart(m: dict) -> Any:
     data = pd.DataFrame(
         [
             {"Actual": "Stayed", "Predicted": "Stayed", "Customers": m["tn"]},

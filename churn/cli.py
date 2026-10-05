@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import sys
 
-import pandas as pd
+import pandas as pd  # type: ignore
 
 from churn import APP_NAME, __version__
 from churn.data import load_data, validate_batch
