@@ -11,13 +11,31 @@ from churn.model import feature_importance, threshold_table
 
 @pytest.fixture(scope="module")
 def risky_customer():
-    return pd.DataFrame([{
-        "gender": "Male", "SeniorCitizen": 0, "Partner": "No", "Dependents": "No", "tenure": 2, "PhoneService": "Yes",
-        "MultipleLines": "No", "InternetService": "Fiber optic", "OnlineSecurity": "No", "OnlineBackup": "No",
-        "DeviceProtection": "No", "TechSupport": "No", "StreamingTV": "Yes", "StreamingMovies": "Yes",
-        "Contract": "Month-to-month", "PaperlessBilling": "Yes", "PaymentMethod": "Electronic check",
-        "MonthlyCharges": 85.0, "TotalCharges": 170.0,
-    }])[FEATURES]
+    return pd.DataFrame(
+        [
+            {
+                "gender": "Male",
+                "SeniorCitizen": 0,
+                "Partner": "No",
+                "Dependents": "No",
+                "tenure": 2,
+                "PhoneService": "Yes",
+                "MultipleLines": "No",
+                "InternetService": "Fiber optic",
+                "OnlineSecurity": "No",
+                "OnlineBackup": "No",
+                "DeviceProtection": "No",
+                "TechSupport": "No",
+                "StreamingTV": "Yes",
+                "StreamingMovies": "Yes",
+                "Contract": "Month-to-month",
+                "PaperlessBilling": "Yes",
+                "PaymentMethod": "Electronic check",
+                "MonthlyCharges": 85.0,
+                "TotalCharges": 170.0,
+            }
+        ]
+    )[FEATURES]
 
 
 def test_drivers_cover_all_features_sorted_by_impact(model, risky_customer):
@@ -45,10 +63,14 @@ def test_all_charts_build_valid_specs(model, risky_customer):
     drivers = customer_drivers(model.pipeline, risky_customer, reference_values(model.X_train))
     scored = pd.DataFrame({"churn_probability": model.proba_test})
     built = [
-        charts.drivers_chart(drivers), charts.rate_chart(df, "Contract"), charts.hist_chart(df, "tenure"),
-        charts.prob_hist(scored, 0.5), charts.roc_chart(model.roc_points(), 0.83),
+        charts.drivers_chart(drivers),
+        charts.rate_chart(df, "Contract"),
+        charts.hist_chart(df, "tenure"),
+        charts.prob_hist(scored, 0.5),
+        charts.roc_chart(model.roc_points(), 0.83),
         charts.threshold_chart(threshold_table(model.y_test, model.proba_test), 0.5),
-        charts.importance_chart(feature_importance(model, repeats=2)), charts.confusion_chart(model.metrics_at(0.5)),
+        charts.importance_chart(feature_importance(model, repeats=2)),
+        charts.confusion_chart(model.metrics_at(0.5)),
     ]
     for chart in built:
         assert chart.to_dict()

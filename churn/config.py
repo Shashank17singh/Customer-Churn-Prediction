@@ -17,15 +17,41 @@ ID_COLUMN = "customerID"
 # Raw input columns, grouped by how they are encoded.
 NUMERIC = ["tenure", "MonthlyCharges", "TotalCharges"]
 BINARY = [
-    "Partner", "Dependents", "PhoneService", "MultipleLines", "OnlineSecurity", "OnlineBackup",
-    "DeviceProtection", "TechSupport", "StreamingTV", "StreamingMovies", "PaperlessBilling",
+    "Partner",
+    "Dependents",
+    "PhoneService",
+    "MultipleLines",
+    "OnlineSecurity",
+    "OnlineBackup",
+    "DeviceProtection",
+    "TechSupport",
+    "StreamingTV",
+    "StreamingMovies",
+    "PaperlessBilling",
 ]  # Yes -> 1, anything else ("No", "No internet service", "No phone service") -> 0
 CATEGORICAL = ["InternetService", "Contract", "PaymentMethod"]  # one-hot encoded
 OTHER = ["gender", "SeniorCitizen"]  # gender: Female -> 1; SeniorCitizen already 0/1
-FEATURES = ["gender", "SeniorCitizen", "Partner", "Dependents", "tenure", "PhoneService", "MultipleLines",
-            "InternetService", "OnlineSecurity", "OnlineBackup", "DeviceProtection", "TechSupport",
-            "StreamingTV", "StreamingMovies", "Contract", "PaperlessBilling", "PaymentMethod",
-            "MonthlyCharges", "TotalCharges"]
+FEATURES = [
+    "gender",
+    "SeniorCitizen",
+    "Partner",
+    "Dependents",
+    "tenure",
+    "PhoneService",
+    "MultipleLines",
+    "InternetService",
+    "OnlineSecurity",
+    "OnlineBackup",
+    "DeviceProtection",
+    "TechSupport",
+    "StreamingTV",
+    "StreamingMovies",
+    "Contract",
+    "PaperlessBilling",
+    "PaymentMethod",
+    "MonthlyCharges",
+    "TotalCharges",
+]
 
 # Allowed values, used by the input form and for validating uploads.
 CHOICES = {

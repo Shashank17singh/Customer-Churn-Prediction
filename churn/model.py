@@ -96,13 +96,18 @@ def metrics_at(y_true, proba, threshold: float = 0.5) -> dict:
         "precision": float(precision_score(y_true, pred, zero_division=0)),
         "recall": float(recall_score(y_true, pred, zero_division=0)),
         "f1": float(f1_score(y_true, pred, zero_division=0)),
-        "tn": int(tn), "fp": int(fp), "fn": int(fn), "tp": int(tp),
+        "tn": int(tn),
+        "fp": int(fp),
+        "fn": int(fn),
+        "tp": int(tp),
     }
 
 
 def threshold_table(y_true, proba, thresholds=None) -> pd.DataFrame:
     thresholds = np.round(np.arange(0.05, 0.96, 0.05), 2) if thresholds is None else thresholds
-    return pd.DataFrame([metrics_at(y_true, proba, t) for t in thresholds])[["threshold", "precision", "recall", "f1", "accuracy"]]
+    return pd.DataFrame([metrics_at(y_true, proba, t) for t in thresholds])[
+        ["threshold", "precision", "recall", "f1", "accuracy"]
+    ]
 
 
 def risk_band(p: float) -> str:
@@ -146,9 +151,7 @@ def train(df: pd.DataFrame | None = None) -> TrainedModel:
     """Train the ANN on a stratified 80/20 split."""
     df = load_data() if df is None else df
     X, y = split_xy(df)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE, stratify=y
-    )
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE, stratify=y)
     pipeline = build_pipeline().fit(X_train, y_train)
     proba = pipeline.predict_proba(X_test)[:, 1]
     clf = pipeline.named_steps["clf"]
@@ -196,12 +199,15 @@ def _row(y_true, proba) -> dict:
 def feature_importance(model: TrainedModel, repeats: int = 5) -> pd.DataFrame:
     """Permutation importance on the raw columns: how much ROC-AUC drops when a column is shuffled."""
     result = permutation_importance(
-        model.pipeline, model.X_test, model.y_test, scoring="roc_auc",
-        n_repeats=repeats, random_state=RANDOM_STATE, n_jobs=1,
+        model.pipeline,
+        model.X_test,
+        model.y_test,
+        scoring="roc_auc",
+        n_repeats=repeats,
+        random_state=RANDOM_STATE,
+        n_jobs=1,
     )
-    table = pd.DataFrame(
-        {"Feature": model.X_test.columns, "Importance": result.importances_mean, "Std": result.importances_std}
-    )
+    table = pd.DataFrame({"Feature": model.X_test.columns, "Importance": result.importances_mean, "Std": result.importances_std})
     return table.sort_values("Importance", ascending=False).reset_index(drop=True)
 
 
@@ -209,11 +215,16 @@ def cross_validate_ann(df: pd.DataFrame | None = None, folds: int = 5) -> pd.Dat
     """Stratified k-fold cross-validation of the full pipeline."""
     X, y = split_xy(load_data() if df is None else df)
     scores = cross_validate(
-        build_pipeline(), X, y, cv=StratifiedKFold(folds, shuffle=True, random_state=RANDOM_STATE),
+        build_pipeline(),
+        X,
+        y,
+        cv=StratifiedKFold(folds, shuffle=True, random_state=RANDOM_STATE),
         scoring={"ROC-AUC": "roc_auc", "Precision": "precision", "Recall": "recall", "F1": "f1", "Accuracy": "accuracy"},
     )
     rows = {k.replace("test_", ""): v for k, v in scores.items() if k.startswith("test_")}
-    return pd.DataFrame({"Metric": list(rows), "Mean": [v.mean() for v in rows.values()], "Std": [v.std() for v in rows.values()]})
+    return pd.DataFrame(
+        {"Metric": list(rows), "Mean": [v.mean() for v in rows.values()], "Std": [v.std() for v in rows.values()]}
+    )
 
 
 # --- scoring ----------------------------------------------------------------------
@@ -235,7 +246,5 @@ def score_frame(model: TrainedModel, df: pd.DataFrame, threshold: float = 0.5) -
 def save(model: TrainedModel, directory: Path = MODEL_DIR) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     joblib.dump(model.pipeline, directory / "churn_model.joblib")
-    (directory / "metrics.json").write_text(
-        json.dumps({**model.summary, **model.metrics_at(0.5)}, indent=2), encoding="utf-8"
-    )
+    (directory / "metrics.json").write_text(json.dumps({**model.summary, **model.metrics_at(0.5)}, indent=2), encoding="utf-8")
     return directory / "churn_model.joblib"

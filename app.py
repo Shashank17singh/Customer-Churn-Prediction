@@ -87,23 +87,63 @@ def pct_prob(p: float) -> str:
 
 
 DEFAULTS = dict(
-    gender="Male", senior=0, partner="No", dependents="No", tenure=2, phone="Yes", lines="No",
-    internet="Fiber optic", contract="Month-to-month", paperless="Yes", payment="Electronic check", monthly=85.0,
-    OnlineSecurity="No", OnlineBackup="No", DeviceProtection="No", TechSupport="No", StreamingTV="Yes", StreamingMovies="Yes",
+    gender="Male",
+    senior=0,
+    partner="No",
+    dependents="No",
+    tenure=2,
+    phone="Yes",
+    lines="No",
+    internet="Fiber optic",
+    contract="Month-to-month",
+    paperless="Yes",
+    payment="Electronic check",
+    monthly=85.0,
+    OnlineSecurity="No",
+    OnlineBackup="No",
+    DeviceProtection="No",
+    TechSupport="No",
+    StreamingTV="Yes",
+    StreamingMovies="Yes",
 )
 PRESETS: dict[str, dict[str, object] | None] = {
     "Custom": None,
     "Loyal long-term customer": dict(
-        gender="Female", senior=0, partner="Yes", dependents="Yes", tenure=60, phone="Yes", lines="Yes",
-        internet="DSL", contract="Two year", paperless="No", payment="Credit card (automatic)", monthly=65.0,
-        OnlineSecurity="Yes", OnlineBackup="Yes", DeviceProtection="Yes", TechSupport="Yes", StreamingTV="No", StreamingMovies="No",
+        gender="Female",
+        senior=0,
+        partner="Yes",
+        dependents="Yes",
+        tenure=60,
+        phone="Yes",
+        lines="Yes",
+        internet="DSL",
+        contract="Two year",
+        paperless="No",
+        payment="Credit card (automatic)",
+        monthly=65.0,
+        OnlineSecurity="Yes",
+        OnlineBackup="Yes",
+        DeviceProtection="Yes",
+        TechSupport="Yes",
+        StreamingTV="No",
+        StreamingMovies="No",
     ),
     "New month-to-month fiber customer": DEFAULTS,
 }
 FORM_KEYS = {
-    "gender": "in_gender", "senior": "in_senior", "partner": "in_partner", "dependents": "in_dependents", "tenure": "in_tenure",
-    "phone": "in_phone", "lines": "in_lines", "internet": "in_internet", "contract": "in_contract", "paperless": "in_paperless",
-    "payment": "in_payment", "monthly": "in_monthly", **{a: f"in_{a}" for a in INTERNET_ADDONS},
+    "gender": "in_gender",
+    "senior": "in_senior",
+    "partner": "in_partner",
+    "dependents": "in_dependents",
+    "tenure": "in_tenure",
+    "phone": "in_phone",
+    "lines": "in_lines",
+    "internet": "in_internet",
+    "contract": "in_contract",
+    "paperless": "in_paperless",
+    "payment": "in_payment",
+    "monthly": "in_monthly",
+    **{a: f"in_{a}" for a in INTERNET_ADDONS},
 }
 
 
@@ -132,9 +172,13 @@ def sidebar() -> float:
         st.caption("ANN-based telecom churn prediction")
 
         threshold = st.slider(
-            "Decision threshold", 0.05, 0.95, 0.50, 0.05,
+            "Decision threshold",
+            0.05,
+            0.95,
+            0.50,
+            0.05,
             help="A customer is predicted to churn when their probability reaches this value. "
-                 "Lower it to catch more churners (higher recall) at the cost of more false alarms.",
+            "Lower it to catch more churners (higher recall) at the cost of more false alarms.",
         )
         st.caption(f"Risk bands: low below {pct(LOW_RISK_BELOW)}, high from {pct(HIGH_RISK_FROM)}.")
 
@@ -143,8 +187,10 @@ def sidebar() -> float:
         st.metric("Customers in dataset", f"{stats['customers']:,}")
         st.metric("Overall churn rate", pct(stats["churn_rate"], 1))
         st.divider()
-        st.caption("Predictions are statistical estimates from a public telecom sample. "
-                   "Use them to prioritise outreach, not to make automated decisions about individuals.")
+        st.caption(
+            "Predictions are statistical estimates from a public telecom sample. "
+            "Use them to prioritise outreach, not to make automated decisions about individuals."
+        )
         st.caption(f"v{__version__}")
     return threshold
 
@@ -176,9 +222,16 @@ def tab_predict(threshold: float) -> None:
         paperless = c3.selectbox("Paperless billing", ["Yes", "No"], key=FORM_KEYS["paperless"])
         payment = c4.selectbox("Payment method", CHOICES["PaymentMethod"], key=FORM_KEYS["payment"])
         monthly = st.slider("Monthly charges ($)", 18.0, 120.0, step=0.25, key=FORM_KEYS["monthly"])
-        override = st.checkbox("Enter total charges manually", key="in_override",
-                               help="Otherwise total charges are estimated as tenure x monthly charges.")
-        total = st.number_input("Total charges ($)", 0.0, 10000.0, float(round(tenure * monthly, 2)), 10.0) if override else round(tenure * monthly, 2)
+        override = st.checkbox(
+            "Enter total charges manually",
+            key="in_override",
+            help="Otherwise total charges are estimated as tenure x monthly charges.",
+        )
+        total = (
+            st.number_input("Total charges ($)", 0.0, 10000.0, float(round(tenure * monthly, 2)), 10.0)
+            if override
+            else round(tenure * monthly, 2)
+        )
         if not override:
             st.caption(f"Total charges estimated at ${total:,.2f} (tenure x monthly).")
 
@@ -193,16 +246,36 @@ def tab_predict(threshold: float) -> None:
         else:
             cols = st.columns(2)
             for i, name in enumerate(INTERNET_ADDONS):
-                label = {"OnlineSecurity": "Online security", "OnlineBackup": "Online backup", "DeviceProtection": "Device protection",
-                         "TechSupport": "Tech support", "StreamingTV": "Streaming TV", "StreamingMovies": "Streaming movies"}[name]
+                label = {
+                    "OnlineSecurity": "Online security",
+                    "OnlineBackup": "Online backup",
+                    "DeviceProtection": "Device protection",
+                    "TechSupport": "Tech support",
+                    "StreamingTV": "Streaming TV",
+                    "StreamingMovies": "Streaming movies",
+                }[name]
                 addons[name] = cols[i % 2].selectbox(label, ["Yes", "No"], key=FORM_KEYS[name])
 
-    customer = pd.DataFrame([{
-        "gender": gender, "SeniorCitizen": senior, "Partner": partner, "Dependents": dependents, "tenure": tenure,
-        "PhoneService": phone, "MultipleLines": lines, "InternetService": internet, **addons,
-        "Contract": contract, "PaperlessBilling": paperless, "PaymentMethod": payment,
-        "MonthlyCharges": monthly, "TotalCharges": total,
-    }])[FEATURES]
+    customer = pd.DataFrame(
+        [
+            {
+                "gender": gender,
+                "SeniorCitizen": senior,
+                "Partner": partner,
+                "Dependents": dependents,
+                "tenure": tenure,
+                "PhoneService": phone,
+                "MultipleLines": lines,
+                "InternetService": internet,
+                **addons,
+                "Contract": contract,
+                "PaperlessBilling": paperless,
+                "PaymentMethod": payment,
+                "MonthlyCharges": monthly,
+                "TotalCharges": total,
+            }
+        ]
+    )[FEATURES]
     probability = float(model.predict_proba(customer)[0])
     band = risk_band(probability)
 
@@ -214,15 +287,19 @@ def tab_predict(threshold: float) -> None:
         m2.markdown(RISK_BADGE[band])
         st.progress(probability)
         if probability >= threshold:
-            st.error(f"Predicted to **churn** (probability {pct_prob(probability)} is at or above the {pct(threshold)} threshold).")
+            st.error(
+                f"Predicted to **churn** (probability {pct_prob(probability)} is at or above the {pct(threshold)} threshold)."
+            )
         else:
             st.success(f"Predicted to **stay** (probability {pct_prob(probability)} is below the {pct(threshold)} threshold).")
 
         st.subheader("What is driving this prediction?")
         drivers = customer_drivers(model.pipeline, customer, reference)
         st.altair_chart(charts.drivers_chart(drivers), width="stretch")
-        st.caption("Each bar shows how much the probability changes if this value were replaced by the typical customer's. "
-                   "Red raises risk, green lowers it. Features are changed one at a time, so this is an approximation.")
+        st.caption(
+            "Each bar shows how much the probability changes if this value were replaced by the typical customer's. "
+            "Red raises risk, green lowers it. Features are changed one at a time, so this is an approximation."
+        )
         with st.expander("Details"):
             table = drivers.copy()
             table["Effect on churn probability"] = (table["Effect on churn probability"] * 100).round(1)
@@ -236,8 +313,10 @@ def tab_predict(threshold: float) -> None:
 
 def tab_batch(threshold: float) -> None:
     model = get_model()
-    st.markdown("Upload a CSV of customers to score them all at once. The columns must match the training data "
-                "(`customerID` is optional and `Churn`, if present, is used only to measure accuracy).")
+    st.markdown(
+        "Upload a CSV of customers to score them all at once. The columns must match the training data "
+        "(`customerID` is optional and `Churn`, if present, is used only to measure accuracy)."
+    )
 
     c1, c2, c3 = st.columns([2, 1, 1])
     uploaded = c1.file_uploader("CSV file", type=["csv"], label_visibility="collapsed")
@@ -280,17 +359,25 @@ def tab_batch(threshold: float) -> None:
     if "Churn" in scored.columns:
         truth = (scored["Churn"].astype(str).str.lower() == "yes").astype(int)
         m = metrics_at(truth, scored["churn_probability"], threshold)
-        st.info(f"The file contains actual outcomes. At this threshold: accuracy {pct(m['accuracy'], 1)}, precision {pct(m['precision'], 1)}, "
-                f"recall {pct(m['recall'], 1)}. If these customers were part of the training data the numbers will look optimistic.")
+        st.info(
+            f"The file contains actual outcomes. At this threshold: accuracy {pct(m['accuracy'], 1)}, precision {pct(m['precision'], 1)}, "
+            f"recall {pct(m['recall'], 1)}. If these customers were part of the training data the numbers will look optimistic."
+        )
 
     bands = st.multiselect("Show risk bands", ["High", "Medium", "Low"], default=["High", "Medium", "Low"])
     view = scored[scored["risk_band"].isin(bands)]
     lead = [c for c in ["customerID", "churn_probability", "predicted_churn", "risk_band"] if c in view.columns]
     st.dataframe(
-        view[lead + [c for c in view.columns if c not in lead]], hide_index=True, width="stretch",
-        column_config={"churn_probability": st.column_config.ProgressColumn("Churn probability", format="percent", min_value=0, max_value=1)},
+        view[lead + [c for c in view.columns if c not in lead]],
+        hide_index=True,
+        width="stretch",
+        column_config={
+            "churn_probability": st.column_config.ProgressColumn("Churn probability", format="percent", min_value=0, max_value=1)
+        },
     )
-    st.download_button("Download scored CSV", scored.to_csv(index=False).encode("utf-8"), "scored_customers.csv", "text/csv", type="primary")
+    st.download_button(
+        "Download scored CSV", scored.to_csv(index=False).encode("utf-8"), "scored_customers.csv", "text/csv", type="primary"
+    )
 
 
 # ============================================================
@@ -312,8 +399,18 @@ def tab_explore() -> None:
     left, right = st.columns(2, gap="large")
     with left:
         st.subheader("Churn rate by category")
-        categorical = ["Contract", "InternetService", "PaymentMethod", "TechSupport", "OnlineSecurity", "PaperlessBilling",
-                       "SeniorCitizen", "Partner", "Dependents", "gender"]
+        categorical = [
+            "Contract",
+            "InternetService",
+            "PaymentMethod",
+            "TechSupport",
+            "OnlineSecurity",
+            "PaperlessBilling",
+            "SeniorCitizen",
+            "Partner",
+            "Dependents",
+            "gender",
+        ]
         column = st.selectbox("Feature", categorical)
         st.altair_chart(charts.rate_chart(df, column), width="stretch")
         st.caption("The dashed red line is the overall churn rate.")
@@ -337,7 +434,9 @@ def tab_performance(threshold: float) -> None:
     m = model.metrics_at(threshold)
     s = model.summary
 
-    st.markdown(f"Evaluated on **{s['test_rows']:,} held-out customers** (20% stratified split) the model never saw during training.")
+    st.markdown(
+        f"Evaluated on **{s['test_rows']:,} held-out customers** (20% stratified split) the model never saw during training."
+    )
     k = st.columns(6)
     k[0].metric("Accuracy", pct(m["accuracy"], 1))
     k[1].metric("Precision", pct(m["precision"], 1), help="Of customers flagged as churners, the share who really churned.")
@@ -345,15 +444,19 @@ def tab_performance(threshold: float) -> None:
     k[3].metric("F1", pct(m["f1"], 1))
     k[4].metric("ROC-AUC", f"{s['roc_auc']:.3f}", help="Threshold-independent ranking quality (0.5 = random, 1.0 = perfect).")
     k[5].metric("PR-AUC", f"{s['pr_auc']:.3f}")
-    st.caption(f"At threshold {pct(threshold)}. Always predicting 'no churn' would already score {pct(model.majority_baseline, 1)} accuracy, "
-               "so look at precision and recall for the churn class, not accuracy alone.")
+    st.caption(
+        f"At threshold {pct(threshold)}. Always predicting 'no churn' would already score {pct(model.majority_baseline, 1)} accuracy, "
+        "so look at precision and recall for the churn class, not accuracy alone."
+    )
 
     c1, c2 = st.columns(2, gap="large")
     c1.altair_chart(charts.confusion_chart(m), width="stretch")
     c2.altair_chart(charts.roc_chart(model.roc_points(), s["roc_auc"]), width="stretch")
 
     st.altair_chart(charts.threshold_chart(threshold_table(model.y_test, model.proba_test), threshold), width="stretch")
-    st.caption("Moving the decision threshold trades precision for recall. Pick it from the cost of a missed churner versus a wasted retention offer.")
+    st.caption(
+        "Moving the decision threshold trades precision for recall. Pick it from the cost of a missed churner versus a wasted retention offer."
+    )
 
     st.subheader("What matters most?")
     st.altair_chart(charts.importance_chart(get_importance()), width="stretch")
@@ -361,7 +464,9 @@ def tab_performance(threshold: float) -> None:
 
     st.subheader("Compared with simpler models")
     st.dataframe(get_comparison(), hide_index=True, width="stretch")
-    st.caption("Same split, same preprocessing, threshold 0.5. On tabular data like this, simple models are often as good as a neural network.")
+    st.caption(
+        "Same split, same preprocessing, threshold 0.5. On tabular data like this, simple models are often as good as a neural network."
+    )
 
     st.subheader("Robustness")
     if st.button("Run 5-fold cross-validation"):

@@ -45,7 +45,7 @@ def test_lower_threshold_flags_more_customers():
     at = run_app()
     at.selectbox(key="preset").select("Loyal long-term customer").run()
     assert at.success
-    at.slider[0].set_value(0.05).run()   # decision threshold
+    at.slider[0].set_value(0.05).run()  # decision threshold
     assert not at.exception
 
 

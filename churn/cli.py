@@ -18,8 +18,10 @@ def cmd_train(args) -> None:
     print(f"Trained on {s['train_rows']} customers, tested on {s['test_rows']} (churn rate {s['churn_rate']:.1%}).")
     print(f"Stopped after {s['epochs']} epochs; {s['n_features']} encoded features.\n")
     m = model.metrics_at(args.threshold)
-    print(f"At threshold {args.threshold:.2f}:  accuracy {m['accuracy']:.1%}  precision {m['precision']:.1%}  "
-          f"recall {m['recall']:.1%}  F1 {m['f1']:.1%}  ROC-AUC {s['roc_auc']:.3f}")
+    print(
+        f"At threshold {args.threshold:.2f}:  accuracy {m['accuracy']:.1%}  precision {m['precision']:.1%}  "
+        f"recall {m['recall']:.1%}  F1 {m['f1']:.1%}  ROC-AUC {s['roc_auc']:.3f}"
+    )
     print(f"(Always predicting 'no churn' scores {model.majority_baseline:.1%} accuracy.)")
     print(f"Confusion matrix: TN {m['tn']}  FP {m['fp']}  FN {m['fn']}  TP {m['tp']}")
     if not args.no_save:
