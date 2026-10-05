@@ -138,7 +138,7 @@ Customer-Churn-Prediction/
 ### 1. Environment Initialization
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Shashank17singh/Customer-Churn-Prediction
 cd Customer-Churn-Prediction
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
