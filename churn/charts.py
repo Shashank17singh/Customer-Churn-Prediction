@@ -1,5 +1,6 @@
-"""Altair chart builders. Pure functions that return charts so they can be unit-tested."""
-
+"""
+Provides Altair visualization components for data exploration, model evaluation, and churn drivers.
+"""
 from __future__ import annotations
 
 from typing import Any
@@ -32,7 +33,6 @@ def drivers_chart(drivers: pd.DataFrame, top: int = 8) -> Any:
 
 
 def rate_chart(df: pd.DataFrame, column: str) -> Any:
-    """Churn rate per category of ``column`` (df must contain a 0/1 ``churned`` column)."""
     data = df.groupby(column, observed=True)["churned"].agg(["mean", "size"]).reset_index()
     data.columns = [column, "Churn rate", "Customers"]
     overall = float(df["churned"].mean())
@@ -55,7 +55,6 @@ def _bin_counts(values, edges) -> pd.DataFrame:
 
 
 def hist_chart(df: pd.DataFrame, column: str, bins: int = 30) -> Any:
-    """Overlaid histograms of ``column`` for churned and retained customers (pre-aggregated)."""
     edges = np.linspace(df[column].min(), df[column].max(), bins + 1)
     parts = []
     for label in ("No", "Yes"):

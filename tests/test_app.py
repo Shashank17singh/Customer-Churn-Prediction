@@ -1,3 +1,7 @@
+"""
+Streamlit UI tests using AppTest.
+Validates tab rendering, form interaction, batch scoring, and cross-validation triggers.
+"""
 from pathlib import Path
 
 import pandas as pd

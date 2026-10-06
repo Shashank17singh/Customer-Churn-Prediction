@@ -1,8 +1,8 @@
-"""Customer Churn Predictor - Streamlit front end.
-
-Run locally:   streamlit run app.py
 """
-
+Streamlit application for customer churn prediction.
+Handles UI state, layout, and calling ML model inference routines.
+Architecture note: Separates model logic (churn/model.py) from presentation layer to ensure testability.
+"""
 from __future__ import annotations
 
 import pandas as pd  # type: ignore
@@ -37,11 +37,6 @@ st.set_page_config(page_title=APP_NAME, layout="wide")
 RISK_BADGE = {"Low": ":green-badge[Low risk]", "Medium": ":orange-badge[Medium risk]", "High": ":red-badge[High risk]"}
 
 
-# ============================================================
-# Cached computations
-# ============================================================
-
-
 @st.cache_data(show_spinner=False)
 def get_data() -> pd.DataFrame:
     return load_data()
@@ -72,21 +67,15 @@ def get_cv() -> pd.DataFrame:
     return cross_validate_ann(get_data())
 
 
-# ============================================================
-# Helpers
-# ============================================================
-
-
 def pct(x: float, digits: int = 0) -> str:
     return f"{x:.{digits}%}"
 
 
 def pct_prob(p: float) -> str:
-    """Probability for display: tiny values read '<1%' instead of a misleading '0%'."""
     return "<1%" if p < 0.005 else pct(p)
 
 
-DEFAULTS = dict(
+DEFAULTS: dict[str, object] = dict(
     gender="Male",
     senior=0,
     partner="No",
@@ -161,11 +150,6 @@ def apply_preset() -> None:
         st.session_state["in_override"] = False
 
 
-# ============================================================
-# Sidebar
-# ============================================================
-
-
 def sidebar() -> float:
     with st.sidebar:
         st.title(APP_NAME)
@@ -193,11 +177,6 @@ def sidebar() -> float:
         )
         st.caption(f"v{__version__}")
     return threshold
-
-
-# ============================================================
-# Tab 1: predict one customer
-# ============================================================
 
 
 def tab_predict(threshold: float) -> None:
@@ -306,11 +285,6 @@ def tab_predict(threshold: float) -> None:
             st.dataframe(table.rename(columns={"Effect on churn probability": "Effect (pp)"}), hide_index=True, width="stretch")
 
 
-# ============================================================
-# Tab 2: batch scoring
-# ============================================================
-
-
 def tab_batch(threshold: float) -> None:
     model = get_model()
     st.markdown(
@@ -380,11 +354,6 @@ def tab_batch(threshold: float) -> None:
     )
 
 
-# ============================================================
-# Tab 3: data explorer
-# ============================================================
-
-
 def tab_explore() -> None:
     df = get_data().copy()
     df["churned"] = (df["Churn"] == "Yes").astype(int)
@@ -422,11 +391,6 @@ def tab_explore() -> None:
 
     with st.expander("Preview the data"):
         st.dataframe(get_data().head(200), hide_index=True, width="stretch")
-
-
-# ============================================================
-# Tab 4: model performance
-# ============================================================
 
 
 def tab_performance(threshold: float) -> None:
@@ -478,11 +442,6 @@ def tab_performance(threshold: float) -> None:
         st.caption("Mean ± standard deviation across 5 stratified folds on the full dataset.")
 
 
-# ============================================================
-# Tab 5: about
-# ============================================================
-
-
 def tab_about() -> None:
     st.markdown(
         f"""
@@ -515,11 +474,6 @@ def tab_about() -> None:
 - Check the **Model performance** tab: recall for churners is moderate at the default threshold. Tune the threshold to your retention budget.
         """
     )
-
-
-# ============================================================
-# Main
-# ============================================================
 
 
 def main() -> None:

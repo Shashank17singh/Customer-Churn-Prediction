@@ -1,5 +1,7 @@
-"""Command-line interface:  ``python -m churn <command>``"""
-
+"""
+Command-line interface for the churn prediction model.
+Provides commands to train, evaluate, and predict on batch data.
+"""
 from __future__ import annotations
 
 import argparse

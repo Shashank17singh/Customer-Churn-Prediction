@@ -241,29 +241,4 @@ Open the repository in a Codespace; `.devcontainer/devcontainer.json` installs t
 
 ---
 
-## Deep Codebase Analysis
 
-| File                                  | Purpose / Details                                                                                                                                   |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `app.py`                              | Streamlit UI with five tabs: predict, batch scoring, data explorer, model performance, about. Trains the model once and caches it.                  |
-| `churn/config.py`                     | Paths, column groups, allowed values, ANN settings and risk-band cut-offs.                                                                          |
-| `churn/data.py`                       | Loads the CSV, encodes raw rows (`normalise`), validates uploaded files and computes headline stats.                                                |
-| `churn/model.py`                      | Builds the preprocessing + ANN pipeline, trains on a stratified split, computes metrics, baselines, importance and cross-validation, scores frames. |
-| `churn/explain.py`                    | Occlusion-based per-customer drivers against the typical customer.                                                                                  |
-| `churn/charts.py`                     | Altair builders for drivers, churn rates, histograms, ROC, threshold sweep, importance and confusion matrix.                                        |
-| `churn/cli.py`                        | `python -m churn` subcommands: train, evaluate, predict.                                                                                            |
-| `data/customer_churn.csv`             | 7,043 telecom customers with 19 features and the `Churn` label.                                                                                     |
-| `data/sample_customers.csv`           | 200 unlabeled customers used as the batch demo and upload template.                                                                                 |
-| `tests/test_data.py`                  | Row counts, label regression, encoding rules and upload validation.                                                                                 |
-| `tests/test_model.py`                 | ROC-AUC floor, no train/test overlap, scaler fitted on train only, determinism, metric maths, scoring, persistence.                                 |
-| `tests/test_explain_charts_cli.py`    | Driver ordering and direction, valid chart specs, CLI behaviour.                                                                                    |
-| `tests/test_app.py`                   | Headless Streamlit scenarios: presets, no-internet customer, threshold, batch scoring, bad uploads, cross-validation.                               |
-| `.github/workflows/ci.yml`            | Runs Ruff and Pytest on Python 3.10 and 3.12.                                                                                                       |
-| `.devcontainer/devcontainer.json`     | Dev container for Codespaces / VS Code: Python 3.12, dependencies, port 8501.                                                                       |
-| `Dockerfile` / `.dockerignore`        | Slim Python image running Streamlit as a non-root user, with a health check.                                                                        |
-| `.streamlit/config.toml`              | Headless server, 20 MB upload limit, usage stats off, theme colour.                                                                                 |
-| `Makefile`                            | Standardized developer commands.                                                                                                                    |
-| `.pre-commit-config.yaml`             | Pre-commit hooks for formatting and linting.                                                                                                        |
-| `CONTRIBUTING.md`                     | Open-source contribution guidelines.                                                                                                                |
-| `requirements.txt` / `pyproject.toml` | Runtime dependencies for Streamlit Cloud; project metadata, extras and Ruff/Pytest/Mypy config.                                                     |
-| `LICENSE`                             | MIT license.                                                                                                                                        |

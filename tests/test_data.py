@@ -1,3 +1,7 @@
+"""
+Tests for data loading, preprocessing, and validation logic.
+Ensures edge cases (like blank numeric strings and rare labels) are handled safely.
+"""
 import pandas as pd
 
 from churn.config import FEATURES, SAMPLE_FILE

@@ -1,5 +1,7 @@
-"""Loading, cleaning and encoding the telecom churn data."""
-
+"""
+Data loading, preprocessing, and validation logic.
+Cleans inputs and splits features from targets.
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -19,10 +21,10 @@ from churn.config import (
 
 
 def load_data(path: Path = DATA_FILE) -> pd.DataFrame:
-    """Read the CSV and return the raw frame with ``TotalCharges`` as a number.
-
-    Eleven brand-new customers (tenure 0) have a blank ``TotalCharges``. Nothing has been
-    billed yet, so those rows are kept with a total of 0 instead of being dropped.
+    """
+    Loads raw customer data and imputes missing lifetime charges.
+    Missing 'TotalCharges' occurs for brand new customers (tenure=0),
+    so we fallback to tenure * MonthlyCharges.
     """
     df = pd.read_csv(path)
     total = pd.to_numeric(df["TotalCharges"], errors="coerce")
@@ -31,18 +33,15 @@ def load_data(path: Path = DATA_FILE) -> pd.DataFrame:
 
 
 def split_xy(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
-    """Features (raw, un-encoded) and a 0/1 target."""
     y = (df[TARGET].astype(str).str.strip().str.lower() == "yes").astype(int)
     return df[FEATURES].copy(), y
 
 
 def normalise(df: pd.DataFrame) -> pd.DataFrame:
-    """Encode raw customer rows for the model. Pure function, safe for training and inference.
-
-    * ``TotalCharges`` is coerced to a number; blanks become ``tenure * MonthlyCharges``.
-    * Yes/No style columns become 1/0; "No internet service" and "No phone service" are "No".
-    * ``gender`` becomes 1 for Female, 0 otherwise (same convention as the original notebook).
-    * Unknown categories stay as text and are ignored by the one-hot encoder.
+    """
+    Forces numeric and boolean columns into predictable types.
+    Pandas object columns can silently carry mixed types, so we explicitly
+    cast to numeric or 1/0 integer representations for the ML pipeline.
     """
     out = df[FEATURES].copy()
 
@@ -60,7 +59,6 @@ def normalise(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def validate_batch(df: pd.DataFrame) -> tuple[list[str], list[str]]:
-    """Check an uploaded frame. Returns ``(errors, warnings)``; errors block scoring."""
     errors: list[str] = []
     warnings: list[str] = []
 
@@ -88,7 +86,6 @@ def validate_batch(df: pd.DataFrame) -> tuple[list[str], list[str]]:
 
 
 def describe(df: pd.DataFrame) -> dict:
-    """Headline numbers for the explorer."""
     _, y = split_xy(df)
     return {
         "customers": len(df),

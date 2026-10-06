@@ -1,3 +1,7 @@
+"""
+Tests for local explanation logic, Altair chart generation, and the CLI predict command.
+Ensures charts build correctly and CLI handles file I/O properly.
+"""
 import pandas as pd
 import pytest
 

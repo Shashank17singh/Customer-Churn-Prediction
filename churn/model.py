@@ -1,18 +1,7 @@
-"""Model pipeline, training, evaluation and batch scoring.
-
-The model is a small feed-forward ANN (26 -> 15 -> 1, ReLU, Adam, early stopping), the same
-architecture as the original notebook, implemented with scikit-learn's ``MLPClassifier`` so
-the app installs quickly on hosted platforms (no TensorFlow).
-
-Differences from the notebook that matter for correctness:
-
-* labels are encoded properly (the notebook's ``replace`` calls were never assigned, which
-  turned every label into 0 and produced a meaningless 100% accuracy);
-* the scaler is fitted on the training split only (no leakage);
-* early stopping uses an internal validation split, not the test set;
-* the split is stratified because only ~27% of customers churn.
 """
-
+Core machine learning routines for churn prediction.
+Defines the preprocessing pipeline, model training (MLP/baselines), and evaluation metrics.
+"""
 from __future__ import annotations
 
 import json
@@ -60,7 +49,11 @@ from churn.data import load_data, normalise, split_xy
 
 
 def build_pipeline(classifier=None) -> Pipeline:
-    """Raw customer rows -> encoded features -> classifier (the ANN unless one is given)."""
+    """
+    Constructs the end-to-end preprocessing and classification pipeline.
+    The normaliser handles data types and nulls, while ColumnTransformer maps 
+    scaling/encoding only to the appropriate subsets before the estimator.
+    """
     if classifier is None:
         classifier = MLPClassifier(
             hidden_layer_sizes=HIDDEN_LAYERS,
@@ -87,7 +80,6 @@ def build_pipeline(classifier=None) -> Pipeline:
 
 
 def metrics_at(y_true, proba, threshold: float = 0.5) -> dict:
-    """Threshold-dependent metrics for the churn class."""
     pred = (np.asarray(proba) >= threshold).astype(int)
     tn, fp, fn, tp = confusion_matrix(y_true, pred, labels=[0, 1]).ravel()
     return {
@@ -119,6 +111,11 @@ def risk_band(p: float) -> str:
 
 @dataclass
 class TrainedModel:
+    """
+    State container for the compiled pipeline and its evaluation artifacts.
+    Keeping the training sets and metrics bundled with the model guarantees 
+    that the performance tab has access to the exact splits used during fit.
+    """
     pipeline: Pipeline
     X_train: pd.DataFrame
     X_test: pd.DataFrame
@@ -135,7 +132,6 @@ class TrainedModel:
 
     @property
     def majority_baseline(self) -> float:
-        """Accuracy of always predicting 'no churn' on the test split."""
         return float(1 - self.y_test.mean())
 
     def roc_points(self) -> pd.DataFrame:
@@ -148,7 +144,10 @@ class TrainedModel:
 
 
 def train(df: pd.DataFrame | None = None) -> TrainedModel:
-    """Train the ANN on a stratified 80/20 split."""
+    """
+    End-to-end model training routine. Handles splitting, fitting, and 
+    generating baseline performance summaries in one pass.
+    """
     df = load_data() if df is None else df
     X, y = split_xy(df)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=TEST_SIZE, random_state=RANDOM_STATE, stratify=y)
@@ -172,7 +171,6 @@ def train(df: pd.DataFrame | None = None) -> TrainedModel:
 
 
 def compare_models(model: TrainedModel) -> pd.DataFrame:
-    """ANN versus classic baselines on the same split and the same preprocessing."""
     candidates = {
         "Logistic regression": LogisticRegression(max_iter=1000),
         "Random forest": RandomForestClassifier(n_estimators=300, min_samples_leaf=3, random_state=RANDOM_STATE, n_jobs=-1),
@@ -197,7 +195,6 @@ def _row(y_true, proba) -> dict:
 
 
 def feature_importance(model: TrainedModel, repeats: int = 5) -> pd.DataFrame:
-    """Permutation importance on the raw columns: how much ROC-AUC drops when a column is shuffled."""
     result = permutation_importance(
         model.pipeline,
         model.X_test,
@@ -212,7 +209,6 @@ def feature_importance(model: TrainedModel, repeats: int = 5) -> pd.DataFrame:
 
 
 def cross_validate_ann(df: pd.DataFrame | None = None, folds: int = 5) -> pd.DataFrame:
-    """Stratified k-fold cross-validation of the full pipeline."""
     X, y = split_xy(load_data() if df is None else df)
     scores = cross_validate(
         build_pipeline(),
@@ -231,7 +227,10 @@ def cross_validate_ann(df: pd.DataFrame | None = None, folds: int = 5) -> pd.Dat
 
 
 def score_frame(model: TrainedModel, df: pd.DataFrame, threshold: float = 0.5) -> pd.DataFrame:
-    """Return ``df`` plus churn probability, predicted label and risk band."""
+    """
+    Batch applies a trained model to a dataframe and appends predicted 
+    probabilities, risk bands, and binary churn labels based on the threshold.
+    """
     scored = df.copy()
     proba = model.predict_proba(scored)
     scored["churn_probability"] = np.round(proba, 4)

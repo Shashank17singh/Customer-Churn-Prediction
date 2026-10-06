@@ -1,3 +1,7 @@
+"""
+Tests for model training, metrics, and scoring.
+Verifies determinism, data splits, and model performance.
+"""
 import numpy as np
 
 from churn.config import NUMERIC

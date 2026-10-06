@@ -1,5 +1,7 @@
-"""Paths, column groups and model settings in one place."""
-
+"""
+Configuration settings for the churn prediction model.
+Defines data paths, feature groups, valid categorical choices, and hyperparameters.
+"""
 from __future__ import annotations
 
 import os
