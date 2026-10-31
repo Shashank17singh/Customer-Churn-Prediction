@@ -75,7 +75,7 @@ graph TD
 | **Data Explorer**             | Churn rate by category and overlaid distributions of tenure and charges for churned versus retained customers.                                             |
 | **Model Diagnostics**         | Confusion matrix, ROC curve, threshold sweep, permutation importance, baseline comparison and 5-fold cross-validation.                                     |
 | **Honest Evaluation**         | Stratified split, scaler fitted on training data only, early stopping on an internal validation set, and accuracy shown against a majority-class baseline. |
-| **Robust Inputs**             | Upload validation with clear errors, unfamiliar categories tolerated, blank `TotalCharges` handled.                                                        |
+| **Input Handling**            | Upload validation with clear errors, unfamiliar categories tolerated, blank `TotalCharges` handled.                                                        |
 
 ---
 
