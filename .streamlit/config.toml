@@ -6,10 +6,10 @@ maxUploadSize = 20
 gatherUsageStats = false
 
 [theme]
-# White report page with a warning orange.
-base = "light"
-primaryColor = "#c2410c"
-backgroundColor = "#ffffff"
-secondaryBackgroundColor = "#f2f4f7"
-textColor = "#101828"
+# Cool steel report page with a warning orange.
+base = "dark"
+primaryColor = "#ea580c"
+backgroundColor = "#12161c"
+secondaryBackgroundColor = "#1c222b"
+textColor = "#e9edf2"
 font = "sans-serif"
