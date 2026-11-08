@@ -1,19 +1,6 @@
-<div align="center">
-
 # Customer Churn Prediction
 
-**An interactive telecom churn predictor: an ANN classifier with per-customer explanations, batch scoring and model diagnostics, served through Streamlit.**
-
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-UI-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-ANN-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
-[![Pandas](https://img.shields.io/badge/Pandas-Data%20Prep-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
-[![Altair](https://img.shields.io/badge/Altair-Charts-1F77B4?style=for-the-badge&logoColor=white)](https://altair-viz.github.io/)
-[![Pytest](https://img.shields.io/badge/Pytest-Tested-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)](https://docs.pytest.org/)
-
-</div>
-
----
+An interactive telecom churn predictor: an ANN classifier with per-customer explanations, batch scoring and model diagnostics, served through Streamlit.
 
 ## Overview
 
