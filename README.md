@@ -210,10 +210,10 @@ Live deployment is hosted on Streamlit Community Cloud at [customer-telecom-chur
 
 ---
 
-## Known Limitations
+## Operational Considerations & Limitations
 
-- Model probabilities estimate relative retention risk rather than deterministic causation; individual drivers measure marginal feature occlusion against average customer medians.
-- The training corpus represents a static telecom distribution; changing pricing plans or competitive alternatives requires ongoing dataset replenishment.
+- **Probabilistic Risk Estimation**: Churn probabilities estimate relative retention risk rather than deterministic causation; feature attribution metrics evaluate marginal risk impact against baseline cohort medians.
+- **Distribution Shift**: The baseline model is trained on standard telecommunications customer profiles; shifts in macroeconomic conditions or pricing tiers warrant continuous monitoring and dataset updates.
 
 ---
 
