@@ -34,6 +34,80 @@ from churn.model import (
 
 st.set_page_config(page_title=APP_NAME, layout="wide")
 
+CUSTOM_CSS = """
+<style>
+/* Hallmark & UI/UX Pro Max Design System · Retention Analytics
+ * Theme: Modern Dark Slate (#0d1117) with Amber/Orange Accent (#f97316)
+ */
+:root {
+  --bg-canvas: #0d1117;
+  --bg-surface: #161b22;
+  --bg-surface-elevated: #21262d;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-default: #30363d;
+  --border-focus: #f97316;
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --accent-primary: #f97316;
+  --accent-hover: #ea580c;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+.stApp {
+  background-color: var(--bg-canvas) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-testid="stHeader"] {
+  background: transparent !important;
+}
+
+[data-testid="stMetric"] {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 1rem 1.25rem !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-testid="stMetricValue"] {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+
+.stTextInput > div > div > input,
+.stNumberInput > div > div > input,
+[data-baseweb="select"] > div {
+  background-color: var(--bg-canvas) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stNumberInput > div > div > input:focus,
+[data-baseweb="select"]:focus-within > div {
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25) !important;
+}
+
+.stTabs [data-baseweb="tab-list"] {
+  gap: 8px;
+  background-color: transparent !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+  color: var(--accent-primary) !important;
+  border-bottom: 2px solid var(--accent-primary) !important;
+  font-weight: 600 !important;
+}
+</style>
+"""
+
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
 RISK_BADGE = {"Low": ":green-badge[Low risk]", "Medium": ":orange-badge[Medium risk]", "High": ":red-badge[High risk]"}
 
 

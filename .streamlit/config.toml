@@ -6,10 +6,9 @@ maxUploadSize = 20
 gatherUsageStats = false
 
 [theme]
-# Cool steel report page with a warning orange.
 base = "dark"
-primaryColor = "#ea580c"
-backgroundColor = "#12161c"
-secondaryBackgroundColor = "#1c222b"
-textColor = "#e9edf2"
+primaryColor = "#f97316"
+backgroundColor = "#0d1117"
+secondaryBackgroundColor = "#161b22"
+textColor = "#f0f6fc"
 font = "sans-serif"
